@@ -1,9 +1,10 @@
 import { createApp } from 'vue'
 import App from './App.vue'
-
+import ElementPlus from 'element-plus'
+import 'element-plus/dist/index.css'
 
 import router from './router'
-import { createPinia } from 'pinia' 
+import { createPinia } from 'pinia'
 //引入初始化样式文件
 import '@/styles/common.scss'
 //引入懒加载指令插件并且注册
@@ -15,6 +16,7 @@ import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
 
 const app = createApp(App)
 app.use(router)
+app.use(ElementPlus)
 const pinia = createPinia()
 app.use(pinia)
 pinia.use(piniaPluginPersistedstate) //注册Pinia持久化插件

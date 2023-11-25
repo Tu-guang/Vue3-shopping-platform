@@ -1,144 +1,147 @@
-<script setup>
-import { getLikeListAPI } from '@/apis/user'
-import { ref,onMounted } from 'vue'
-import GoodsItem from '@/views/Home/components/GoodsItem.vue';
-import { useUserStore } from '@/stores/user';
-const userStore = useUserStore()
+<script lang="ts" setup>
+import {reactive, ref} from 'vue'
+import type {FormInstance, FormRules} from 'element-plus'
+import {ElMessage} from 'element-plus'
+import {Plus} from '@element-plus/icons-vue'
 
-const likeList = ref([])
-const getLikeList = async ()=>{
-    const res = await getLikeListAPI({limit:4}) //限制猜你喜欢只展示四个图片
-    likeList.value = res.result
+interface RuleForm {
+  account: string
+  username: string
+  password: string
+  phone: string
+  avatar: string
+  sex: string
+  mail: string
 }
-onMounted(() => {
-    getLikeList()
+
+const formSize = ref('default')
+const ruleFormRef = ref<FormInstance>()
+const ruleForm = reactive<RuleForm>({
+  account: '10086',
+  username: '小明',
+  password: '123456',
+  phone: '10086',
+  avatar: 'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg',
+  sex: '男',
+  mail: 'Hello@mail.com'
 })
+
+const rules = reactive<FormRules<RuleForm>>({
+  name: [
+    {required: true, message: 'Please input Activity name', trigger: 'blur'},
+    {min: 3, max: 5, message: 'Length should be 3 to 5', trigger: 'blur'},
+  ]
+})
+
+const submitForm = async (formEl: FormInstance | undefined) => {
+  if (!formEl) return
+  await formEl.validate((valid, fields) => {
+    if (valid) {
+      console.log('submit!')
+    } else {
+      console.log('error submit!', fields)
+    }
+  })
+}
+
+const resetForm = (formEl: FormInstance | undefined) => {
+  if (!formEl) return
+  formEl.resetFields()
+}
+
+const handleAvatarSuccess: UploadProps['onSuccess'] = (
+    response,
+    uploadFile
+) => {
+  imageUrl.value = URL.createObjectURL(uploadFile.raw!)
+}
+
+const beforeAvatarUpload: UploadProps['beforeUpload'] = (rawFile) => {
+  if (rawFile.type !== 'image/jpeg') {
+    ElMessage.error('Avatar picture must be JPG format!')
+    return false
+  } else if (rawFile.size / 1024 / 1024 > 2) {
+    ElMessage.error('Avatar picture size can not exceed 2MB!')
+    return false
+  }
+  return true
+}
 </script>
 
 <template>
   <div class="home-overview">
-    <!-- 用户信息 -->
-    <div class="user-meta">
-      <div class="avatar">
-        <img :src="userStore.userInfo?.avatar" />
-      </div>
-      <h4>{{ userStore.userInfo?.account }}</h4>
-    </div>
-    <div class="item">
-      <a href="javascript:;">
-        <span class="iconfont icon-hy"></span>
-        <p>会员中心</p>
-      </a>
-      <a href="javascript:;">
-        <span class="iconfont icon-aq"></span>
-        <p>安全设置</p>
-      </a>
-      <a href="javascript:;">
-        <span class="iconfont icon-dw"></span>
-        <p>地址管理</p>
-      </a>
-    </div>
-  </div>
-  <div class="like-container">
-    <div class="home-panel">
-      <div class="header">
-        <h4 data-v-bcb266e0="">猜你喜欢</h4>
-      </div>
-      <div class="goods-list">
-        <GoodsItem v-for="good in likeList" :key="good.id" :goods="good" />
-      </div>
-    </div>
+    <el-row justify="center">
+      <el-col :span="8">
+        <div style="margin-top: 10px">个人信息</div>
+      </el-col>
+    </el-row>
+    <el-row>
+      <el-col :span="12">
+        <div style="margin-top: 30px">
+          <el-form
+              ref="ruleFormRef"
+              :model="ruleForm"
+              :rules="rules"
+              label-width="120px"
+              class="demo-ruleForm"
+              :size="formSize"
+              status-icon
+          >
+            <el-form-item label="账号" prop="account">
+              <el-input v-model="ruleForm.account"/>
+            </el-form-item>
+            <el-form-item label="用户名" prop="username">
+              <el-input v-model="ruleForm.username"/>
+            </el-form-item>
+            <el-form-item label="密码" prop="password">
+              <el-input v-model="ruleForm.password"/>
+            </el-form-item>
+            <el-form-item label="手机号" prop="phone">
+              <el-input v-model="ruleForm.phone"/>
+            </el-form-item>
+            <el-form-item label="头像" prop="avatar">
+              <el-row>
+                <el-col>
+                  <el-avatar shape="square" :size="100" fit="cover"
+                             :src="ruleForm.avatar"/>
+                </el-col>
+                <el-col>
+                  <el-upload
+                      action="https://run.mocky.io/v3/9d059bf9-4660-45f2-925d-ce80ad6c4d15"
+                      list-type="picture-card"
+                      :on-remove="handleRemove"
+                      :on-success="handleAvatarSuccess"
+                      :before-upload="beforeAvatarUpload"
+                  >
+                    <el-icon>
+                      <Plus/>
+                    </el-icon>
+                  </el-upload>
+                </el-col>
+              </el-row>
+
+            </el-form-item>
+            <el-form-item label="性别" prop="sex">
+              <el-input v-model="ruleForm.sex"/>
+            </el-form-item>
+            <el-form-item label="邮箱" prop="mail">
+              <el-input v-model="ruleForm.mail"/>
+            </el-form-item>
+
+            <el-form-item>
+              <el-button type="primary" @click="submitForm(ruleFormRef)">
+                提交
+              </el-button>
+              <el-button @click="resetForm(ruleFormRef)">Reset</el-button>
+            </el-form-item>
+          </el-form>
+        </div>
+      </el-col>
+    </el-row>
   </div>
 </template>
 
 <style scoped lang="scss">
-.home-overview {
-  height: 132px;
-  background: url(@/assets/images/center-bg.png) no-repeat center / cover;
-  display: flex;
 
-  .user-meta {
-    flex: 1;
-    display: flex;
-    align-items: center;
 
-    .avatar {
-      width: 85px;
-      height: 85px;
-      border-radius: 50%;
-      overflow: hidden;
-      margin-left: 60px;
-
-      img {
-        width: 100%;
-        height: 100%;
-      }
-    }
-
-    h4 {
-      padding-left: 26px;
-      font-size: 18px;
-      font-weight: normal;
-      color: white;
-    }
-  }
-
-  .item {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: space-around;
-
-    &:first-child {
-      border-right: 1px solid #f4f4f4;
-    }
-
-    a {
-      color: white;
-      font-size: 16px;
-      text-align: center;
-
-      .iconfont {
-        font-size: 32px;
-      }
-
-      p {
-        line-height: 32px;
-      }
-    }
-  }
-}
-
-.like-container {
-  margin-top: 20px;
-  border-radius: 4px;
-  background-color: #fff;
-}
-
-.home-panel {
-  background-color: #fff;
-  padding: 0 20px;
-  margin-top: 20px;
-  height: 400px;
-
-  .header {
-    height: 66px;
-    border-bottom: 1px solid #f5f5f5;
-    padding: 18px 0;
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-
-    h4 {
-      font-size: 22px;
-      font-weight: 400;
-    }
-
-  }
-
-  .goods-list {
-    display: flex;
-    justify-content: space-around;
-  }
-}
 </style>

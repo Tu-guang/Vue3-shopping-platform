@@ -8,19 +8,16 @@
           <RouterLink to="/member">个人信息</RouterLink>
         </div>
         <div class="links">
-          <RouterLink to="/member/order">历史订单</RouterLink>
+          <RouterLink to="/member/address">收货地址</RouterLink>
         </div>
         <div class="links">
-          <RouterLink to="/member/order">收货地址</RouterLink>
+          <RouterLink to="/member/footprint">我的足迹</RouterLink>
         </div>
         <div class="links">
-          <RouterLink to="/member/order">我的足迹</RouterLink>
+          <RouterLink to="/member/favorites">我的收藏</RouterLink>
         </div>
         <div class="links">
-          <RouterLink to="/member/order">我的收藏</RouterLink>
-        </div>
-        <div class="links">
-          <RouterLink to="/member/order">我的评价</RouterLink>
+          <RouterLink to="/member/appraise">我的评价</RouterLink>
         </div>
       </div>
     </div>
@@ -35,6 +32,7 @@
 .container {
   display: flex;
   padding-top: 20px;
+  height: 800px;
 
   .xtx-member-aside {
     width: 220px;
