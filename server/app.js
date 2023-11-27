@@ -3,7 +3,8 @@ const app = express();
 const bodyparser = require("body-parser");
 const multer = require("multer");
 const Jwt = require("./util/getJwt")
-
+const login=require("./router/login")
+const address=require("./router/address")
 //挂载参数处理的中间件
 //extended:false 表示使用系统模块querystring来处理 将字符串转化为对象
 app.use(
@@ -57,23 +58,26 @@ app.use((req, res, next) => {
         next();
         return false;
     }
-    let token = req.headers["token"];
-    Jwt.getToken(token)
-        .then((data) => {
-            // 解析正确
-            res.data = data;
-            // console.log(data);
-            next();
-        })
-        .catch((error) => {
-            console.log(error);
-            res.send({err: 401, msg: "token过期"});
-        });
+    next();
+    // let token = req.headers["token"];
+    // Jwt.getToken(token)
+    //     .then((data) => {
+    //         // 解析正确
+    //         res.data = data;
+    //         // console.log(data);
+    //         next();
+    //     })
+    //     .catch((error) => {
+    //         console.log(error);
+    //         res.send({err: 401, msg: "token过期"});
+    //     });
 });
 
 app.get("/", function (req, res) {
     res.send("Hello World");
 });
+app.use("/",login);
+app.use("/",address);
 
 
 let server = app.listen(8081, function () {
