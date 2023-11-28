@@ -161,6 +161,10 @@ const handleReflush = (item) => {
   .favorites-list {
     display: flex;
     justify-content: space-around;
+    flex-wrap: wrap;
+    height: 700px;
+    overflow-x: auto;
+    overflow-y: auto;
   }
 }
 </style>

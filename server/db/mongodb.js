@@ -129,11 +129,12 @@ const insertDocument = async (collectionName, document) => {
  */
 const getData = async (collectionName, user_id) => {
     try {
+        console.log(user_id)
         await client.connect();
         const db = client.db(dbName);
         const collection = db.collection(collectionName);
         let array = []
-        if (user_id !== null) {
+        if (user_id !== undefined) {
             array = await collection.find({user_id: user_id}).toArray();
         } else {
             array = await collection.find().toArray();

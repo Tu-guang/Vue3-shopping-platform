@@ -1,73 +1,45 @@
 <script setup>
-import DetailHot from './components/DetailHot.vue'
-import { onMounted,ref } from 'vue'
-import { getDetail } from '@/apis/detail'
-import { useRoute } from 'vue-router' //获取路由参数
-import { ElMessage } from 'element-plus';
-import { useCartStore } from '@/stores/cartStore';
+import {onMounted, ref} from 'vue'
 
 //获取基础数据
 const goods = ref({}) //接口中result是一个对象
-const route = useRoute()
-const getGoods = async ()=>{
-    const res = await getDetail(route.params.id)
-    goods.value = res.result
+const getGoods = async () => {
+  // const res = await getDetail(route.params.id)
+  goods.value =
+      {
+        "id": 1,
+        "name": "历史的棋局",
+        "desc": "历史如棋谱，时代变了，那些历史的棋局还能教会我们什么? 刘邦开国后大杀功臣?",
+        "price": "58.00",
+        "picture": "https://cdn.weread.qq.com/weread/cover/51/cpplatform_1dg3xph2pagiwzkb1tauzy/t6_cpplatform_1dg3xph2pagiwzkb1tauzy1700796621.jpg",
+        "orderNum": 992,
+        "time": "2023-11-20 11:30:00"
+  }
 }
-onMounted(()=>getGoods())
+onMounted(() => getGoods())
 
 //sku规格被操作时
 let skuObj = {}
-const skuChange = (sku) =>{
+const skuChange = (sku) => {
   //console.log(sku) //输出结果是一个对象
   skuObj = sku
 }
 
 //count
 const count = ref(1) //初始值为1
-const countChange = (count)=>{
-  //console.log(count)
+const countChange = (count) => {
 }
 
-//添加购物车（根据是否获取到 sku对象中的skuId来判断用户是否选择规格）
-const cartStore = useCartStore()
-//注意此处的两个addCart不是同一个
-const addCart = ()=>{
-  if(skuObj.skuId){
-    //规格已经选择，触发action。传递参数（在cartStore.js中为goods对象）
-    cartStore.addCart({
-      id: goods.value.id, //商品id
-      name: goods.value.name, //商品名称
-      picture: goods.value.mainPictures[0], //图片
-      price: goods.value.price, //最新价格
-      count: count.value, //商品数量
-      skuId: skuObj.skuId, //skuId
-      attrsText: skuObj.specsText, //商品规格文本
-      selected: true //商品是否选中
-    })
-  }else{
-    //规格没有选择 提示用户
-    ElMessage.warning('请选择规格')
-  }
-}
 
 </script>
 
 <template>
   <div class="xtx-goods-page">
-    <div class="container" v-if="goods.details">
-        <!--面包屑-->
-        <div class="bread-container">
+    <div class="container" v-if="goods.id">
+      <!--面包屑-->
+      <div class="bread-container">
         <el-breadcrumb separator=">">
-            <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
-            <!--
-                这里有一个小坑：goods一开始是一个空{}，{}.categories -> undefined -> undefined[1]
-                解决办法：1.可选链的语法，在goods.categories后面加 ?.
-                        2.v-if手动控制渲染时机，保证只有数据存在才渲染。这里使用goods中的任意数据details
-            -->
-            <el-breadcrumb-item :to="{ path: `/category/${goods.categories[1].id}` }">{{ goods.categories[1].name }}
-            </el-breadcrumb-item>
-            <el-breadcrumb-item :to="{ path: `/category/sub/${goods.categories[0].id}` }">{{ goods.categories[0].name }}
-            </el-breadcrumb-item>
+          <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
         </el-breadcrumb>
       </div>
       <!-- 商品信息 -->
@@ -76,85 +48,28 @@ const addCart = ()=>{
           <div class="goods-info">
             <div class="media">
               <!-- 图片预览区 -->
-                <XtxImageView :image-list="goods.mainPictures"/>
-              <!-- 统计数量 -->
-              <ul class="goods-sales">
-                <li>
-                  <p>销量人气</p>
-                  <p>{{ goods.salesCount}}+</p>
-                  <p><i class="iconfont icon-task-filling"></i>销量人气</p>
-                </li>
-                <li>
-                  <p>商品评价</p>
-                  <p>{{ goods.commentCount }}+</p>
-                  <p><i class="iconfont icon-comment-filling"></i>查看评价</p>
-                </li>
-                <li>
-                  <p>收藏人气</p>
-                  <p>{{ goods.CollectCount }}+</p>
-                  <p><i class="iconfont icon-favorite-filling"></i>收藏商品</p>
-                </li>
-                <li>
-                  <p>品牌信息</p>
-                  <p>{{ goods.brand.name }}+</p>
-                  <p><i class="iconfont icon-dynamic-filling"></i>品牌主页</p>
-                </li>
-              </ul>
+              <el-image :src="goods.picture"></el-image>
             </div>
             <div class="spec">
               <!-- 商品信息区 -->
               <p class="g-name">{{ goods.name }}</p>
               <p class="g-desc">{{ goods.desc }} </p>
               <p class="g-price">
-                <span>{{ goods.oldPrice }}</span>
+                <span>{{ goods.price }}</span>
                 <span>{{ goods.price }}</span>
               </p>
-              <div class="g-service">
-                <dl>
-                  <dt>促销</dt>
-                  <dd>12月好物放送，App领券购买直降120元</dd>
-                </dl>
-                <dl>
-                  <dt>服务</dt>
-                  <dd>
-                    <span>无忧退货</span>
-                    <span>快速退款</span>
-                    <span>免费包邮</span>
-                    <a href="javascript:;">了解详情</a>
-                  </dd>
-                </dl>
-              </div>
               <!-- sku组件 -->
               <XtxSku :goods="goods" @change="skuChange"/>
               <!-- 数据组件 -->
               <el-input-number v-model="count" @change="countChange"/>
               <!-- 按钮组件 -->
               <div>
-                <el-button size="large" class="btn" @click="addCart">
+                <el-button size="large" class="btn">
                   加入购物车
                 </el-button>
-              </div>
-
-            </div>
-          </div>
-          <div class="goods-footer">
-            <div class="goods-article">
-              <!-- 商品详情 -->
-              <div class="goods-tabs">
-                <nav>
-                  <a>商品详情</a>
-                </nav>
-                <div class="goods-detail">
-                  <!-- 属性 -->
-                  <ul class="attrs">
-                    <li v-for="item in goods.details.properties" :key="item.value">
-                      <span class="dt">{{ item.name }}</span>
-                      <span class="dd">{{ item.value }}</span>
-                    </li>
-                  </ul>
-                  <!-- 图片 -->
-                  <img v-for="img in goods.details.pictures" :key="img" :src="img" alt="">
-                </div>
+                <el-button size="large" class="btn" type="success">
+                  加入收藏
+                </el-button>
               </div>
             </div>
           </div>
@@ -302,7 +217,7 @@ const addCart = ()=>{
       flex: 1;
       position: relative;
 
-      ~li::after {
+      ~ li::after {
         position: absolute;
         top: 10px;
         left: 0;
@@ -356,7 +271,7 @@ const addCart = ()=>{
       font-size: 18px;
       position: relative;
 
-      >span {
+      > span {
         color: $priceColor;
         font-size: 16px;
         margin-left: 10px;
@@ -390,7 +305,7 @@ const addCart = ()=>{
     }
   }
 
-  >img {
+  > img {
     width: 100%;
   }
 }

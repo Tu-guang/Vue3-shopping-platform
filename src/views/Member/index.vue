@@ -32,7 +32,7 @@
 .container {
   display: flex;
   padding-top: 20px;
-  height: 800px;
+  height: 850px;
 
   .xtx-member-aside {
     width: 220px;

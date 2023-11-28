@@ -9,7 +9,7 @@ exports.signToken = (userName, userId) => {
 exports.getToken = (token) => {
     return new Promise((resolve, reject) => {
         if (!token) {
-            reject({ error: "token是空的" });
+            reject({ err: "token是空的" });
         } else {
             const info = jwt.verify(token, jwtSecret);
             resolve(info); //解析返回的值

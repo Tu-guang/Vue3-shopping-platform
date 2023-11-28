@@ -1,9 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const Jwt = require('../util/getJwt');
 const mongodb = require('../db/mongodb');
 
-router.post('/favorites/add', async (req, res) => {
+router.post('/favorites/addAll', async (req, res) => {
     console.log(req.body);
     let x = [
         {
@@ -65,6 +64,26 @@ router.post('/favorites/add', async (req, res) => {
         "result": data
     })
 });
+
+router.post('/favorites/add', async (req, res) => {
+    console.log(req.body);
+    var newVar = await mongodb.getData('favorites');
+    var data1 = await mongodb.query('favorites', {
+        user_id: req.body.user_id,
+        name: req.body.name
+    });
+    req.body.id = newVar.length + 1
+    if (data1 === null) {
+        var data = await mongodb.insertMany('favorites', [req.body]); // 在这里加上await关键字
+        // console.log(data)
+    }
+    res.send({
+        "code": 200,
+        "msg": "操作成功",
+        "result": ""
+    })
+});
+
 
 router.post('/favorites/list', async (req, res) => {
     console.log(req.body);

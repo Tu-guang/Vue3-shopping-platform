@@ -1,14 +1,13 @@
 const express = require('express');
 const router = express.Router();
-const Jwt = require('../util/getJwt');
 const mongodb = require('../db/mongodb');
 
 router.post('/order/add', async (req, res) => {
     console.log(req.body);
     let x = [
         {
-            "id": "1729012423043584002",
-            user_id: 1,
+            "id": "1729012423043584005",
+            user_id: 2,
             "createTime": "2023-11-27 13:41:00",
             "payType": 1,
             "orderState": 2,
@@ -34,8 +33,8 @@ router.post('/order/add', async (req, res) => {
             "appraise_text": "评价1"
         },
         {
-            "id": "1728808512831623170",
-            user_id: 1,
+            "id": "1728808512831623177",
+            user_id: 2,
             "createTime": "2023-11-27 00:10:44",
             "payType": 1,
             "orderState": 1,

@@ -1,45 +1,63 @@
 const express = require('express');
-const router = express.Router();
 const mongodb = require("../db/mongodb");
-router.post('/books', async (req, res) => {
+const router = express.Router();
+router.post('/books/list', async (req, res) => {
     console.log(req.body);
+    var data = await mongodb.getData('books'); // 在这里加上await关键字
+    // console.log(data)
     res.send({
-        "code": "1",
+        "code": 200,
         "msg": "操作成功",
-        "result": [
-            {
-                "id": "4023100",
-                "name": "办公家用Mini健身磁控车",
-                "desc": "原创设计，小巧精致，安装便捷，收纳方便",
-                "price": "581.00",
-                "picture": "https://yanxuan-item.nosdn.127.net/8250d307ea586c1a1d1430023d6f0ce6.jpg",
-                "orderNum": 1017
-            },
-            {
-                "id": "4023115",
-                "name": "双镜四季骑行半盔Pro（摩托车可用）",
-                "desc": "3C认证，双镜片设计，进口材质耐撞抗摔",
-                "price": "198.00",
-                "picture": "https://yanxuan-item.nosdn.127.net/7498e93c9744cce5dad8b556befe8c10.png",
-                "orderNum": 945
-            },
-            {
-                "id": "4023114",
-                "name": "KJE金属色系轻量电动车骑行盔男女通用",
-                "desc": "3C认证，进口材料，安全出行",
-                "price": "120.00",
-                "picture": "https://yanxuan-item.nosdn.127.net/8f3a3b7dc6ca874f934b15af31417f61.png",
-                "orderNum": 5235
-            },
-            {
-                "id": "4026116",
-                "name": "探险者黑胶防晒防雨遮阳伞户外钓鱼伞",
-                "desc": "防雨遮阳隔绝紫外线",
-                "price": "169.00",
-                "picture": "https://yanxuan-item.nosdn.127.net/66090c5de391e43e4516601e14870842.jpg",
-                "orderNum": 2549
-            }
-        ]
+        "result": data
+    })
+});
+
+router.post('/books/addAll', async (req, res) => {
+    console.log(req.body);
+    let x = [
+        {
+            "id": 1,
+            "name": "历史的棋局",
+            "desc": "历史如棋谱，时代变了，那些历史的棋局还能教会我们什么? 刘邦开国后大杀功臣?",
+            "price": "581.00",
+            "picture": "https://cdn.weread.qq.com/weread/cover/51/cpplatform_1dg3xph2pagiwzkb1tauzy/t6_cpplatform_1dg3xph2pagiwzkb1tauzy1700796621.jpg",
+            "orderNum": 992,
+            "time": "2023-11-20 11:30:00"
+        },
+        {
+            "id": 3,
+            "name": "活着",
+            "desc": "同名电影《活着》由张艺谋执导，葛优、巩俐两大影帝影后主演1994年该片在第47届戛纳电影节上斩获评委会大奖，最佳男演员奖同时还荣获了英国电影学院奖最佳外语片等重要奖项。",
+            "price": "125.00",
+            "picture": "https://wfqqreader-1252317822.image.myqcloud.com/cover/464/834464/t6_834464.jpg",
+            "orderNum": 3071,
+            "time": "2023-11-20 11:30:00"
+        },
+        {
+            "id": 4,
+            "name": "三国演义",
+            "desc": "古典小说《三国演义》从汉灵帝黄巾起义写起，到西晋三国统一为止，描写了九十余年的重大历史事件及历史人物的活动，展示了三国兴亡的历史画卷，形象地再现了这一风云变幻的历史时代，生动地揭示了统治集团内部尔虞我诈、争权夺利的关系。",
+            "price": "89.00",
+            "picture": "https://cdn.weread.qq.com/weread/cover/20/yuewen_29855984/t6_yuewen_298559841676969263.jpg",
+            "orderNum": 1300,
+            "time": "2023-11-20 11:30:00"
+        },
+        {
+            "id": 5,
+            "name": "三体",
+            "desc": "刘慈欣经典科幻代表作 每个人的书架上都该有套《三体》!关于宇宙最狂野的想象!就是它!征服世界的中国科幻神作!包揽九项世界顶级科幻大奖!出版16个语种，横扫30国读者!奥巴马雷军、马化腾、周鸿柿、潘石屹、扎克伯格.....强推!",
+            "price": "89.00",
+            "picture": "https://cdn.weread.qq.com/weread/cover/80/yuewen_695233/t6_yuewen_6952331677562148.jpg",
+            "orderNum": 1350,
+            "time": "2023-11-20 11:30:00"
+        }
+    ]
+    await mongodb.insertMany('books', x); // 在这里加上await关键字
+    // console.log(data)
+    res.send({
+        "code": 200,
+        "msg": "操作成功",
+        "result": ""
     })
 });
 

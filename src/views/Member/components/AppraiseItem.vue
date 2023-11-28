@@ -77,7 +77,7 @@ const getOrderList = async () => {
   //   }
   // ]
   // total.value = res.result.counts //获取页面总数
-  total.value = 205 //获取页面总数
+  total.value = res.result.length //获取页面总数
 }
 onMounted(() => {
   getOrderList()

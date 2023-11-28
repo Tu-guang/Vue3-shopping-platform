@@ -1,9 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const Jwt = require('../util/getJwt');
 const mongodb = require('../db/mongodb');
 
-router.post('/footprint/add', async (req, res) => {
+router.post('/footprint/addAll', async (req, res) => {
     console.log(req.body);
     let x = [
         {
@@ -73,6 +72,25 @@ router.post('/footprint/add', async (req, res) => {
         "code": 200,
         "msg": "操作成功",
         "result": data
+    })
+});
+
+router.post('/footprint/add', async (req, res) => {
+    console.log(req.body);
+    var newVar = await mongodb.getData('footprint');
+    var data1 = await mongodb.query('footprint', {
+        user_id: req.body.user_id,
+        name: req.body.name
+    });
+    req.body.id = newVar.length + 1
+    if (data1 === null) {
+        var data = await mongodb.insertMany('footprint', [req.body]); // 在这里加上await关键字
+        // console.log(data)
+    }
+    res.send({
+        "code": 200,
+        "msg": "操作成功",
+        "result": ""
     })
 });
 

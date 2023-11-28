@@ -12,6 +12,7 @@ const footprint = require("./router/footprint")
 const favorites = require("./router/favorites")
 const order = require("./router/order")
 const books = require("./router/books")
+const base = require("./router/base")
 //挂载参数处理的中间件
 //extended:false 表示使用系统模块querystring来处理 将字符串转化为对象
 app.use(
@@ -98,6 +99,8 @@ app.use("/", footprint);
 app.use("/", favorites);
 app.use("/", order);
 app.use("/", books);
+app.use("/", base);
+
 
 
 let server = app.listen(8081, function () {
