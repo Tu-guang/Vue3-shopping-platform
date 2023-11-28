@@ -1,20 +1,19 @@
 <script setup>
 import {onMounted, ref} from 'vue'
-
+import {booksAPI} from '@/apis/books'
+import {useRoute} from 'vue-router'
+import {footprintAddAPI} from "@/apis/footprint";
+import {favoritesAddAPI} from "@/apis/favorites"; //获取路由参数
+const route = useRoute()
+import {ElMessage} from 'element-plus'
+import {orderAPI} from "@/apis/myorder";
 //获取基础数据
 const goods = ref({}) //接口中result是一个对象
 const getGoods = async () => {
-  // const res = await getDetail(route.params.id)
-  goods.value =
-      {
-        "id": 1,
-        "name": "历史的棋局",
-        "desc": "历史如棋谱，时代变了，那些历史的棋局还能教会我们什么? 刘邦开国后大杀功臣?",
-        "price": "58.00",
-        "picture": "https://cdn.weread.qq.com/weread/cover/51/cpplatform_1dg3xph2pagiwzkb1tauzy/t6_cpplatform_1dg3xph2pagiwzkb1tauzy1700796621.jpg",
-        "orderNum": 992,
-        "time": "2023-11-20 11:30:00"
-  }
+  const res = await booksAPI({id: route.params.id})
+  goods.value = res.result
+  delete goods.value._id
+  var newVar = await footprintAddAPI(goods.value);
 }
 onMounted(() => getGoods())
 
@@ -28,6 +27,37 @@ const skuChange = (sku) => {
 //count
 const count = ref(1) //初始值为1
 const countChange = (count) => {
+}
+
+const addFavorites = () => {
+  favoritesAddAPI(goods.value).then((res) => {
+    if (res.code === 200) {
+      ElMessage({
+        message: '收藏成功',
+        type: 'success',
+      })
+    } else {
+      ElMessage({
+        message: '收藏失败',
+        type: 'error',
+      })
+    }
+  })
+}
+const Order = () => {
+  orderAPI(goods.value).then((res) => {
+    if (res.code === 200) {
+      ElMessage({
+        message: '购买成功',
+        type: 'success',
+      })
+    } else {
+      ElMessage({
+        message: '购买失败',
+        type: 'error',
+      })
+    }
+  })
 }
 
 
@@ -64,10 +94,10 @@ const countChange = (count) => {
               <el-input-number v-model="count" @change="countChange"/>
               <!-- 按钮组件 -->
               <div>
-                <el-button size="large" class="btn">
-                  加入购物车
+                <el-button size="large" class="btn" @click="Order">
+                  下单
                 </el-button>
-                <el-button size="large" class="btn" type="success">
+                <el-button size="large" class="btn" type="success" @click="addFavorites">
                   加入收藏
                 </el-button>
               </div>

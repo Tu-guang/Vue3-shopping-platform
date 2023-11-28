@@ -21,62 +21,7 @@ const params = ref({ //这里设置为响应式数据是为了后面的修改
 let appraise_text = ref('')
 const getOrderList = async () => {
   const res = await orderListAPI()
-  orderList.value = res.result
-  // orderList.value = [
-  //   {
-  //     "id": "1729012423043584002",
-  //     "createTime": "2023-11-27 13:41:00",
-  //     "payType": 1,
-  //     "orderState": 2,
-  //     "payLatestTime": "2023-11-27 14:11:00",
-  //     "postFee": 0.00,
-  //     "payMoney": 29.90,
-  //     "totalMoney": 29.90,
-  //     "totalNum": 1,
-  //     "skus": [
-  //       {
-  //         "id": "1729012423047778306",
-  //         "spuId": 4026450,
-  //         "name": "三体",
-  //         "quantity": 1,
-  //         "image": "https://cdn.weread.qq.com/weread/cover/80/yuewen_695233/t6_yuewen_6952331677562148.jpg",
-  //         "realPay": 29.90,
-  //         "curPrice": 29.90,
-  //         "totalMoney": null,
-  //       }
-  //     ],
-  //     "payChannel": 1,
-  //     "countdown": -1,
-  //     "appraise_text": "评价1"
-  //   },
-  //   {
-  //     "id": "1728808512831623170",
-  //     "createTime": "2023-11-27 00:10:44",
-  //     "payType": 1,
-  //     "orderState": 1,
-  //     "payLatestTime": "2023-11-27 00:40:44",
-  //     "postFee": 9.00,
-  //     "payMoney": 59.00,
-  //     "totalMoney": 50.00,
-  //     "totalNum": 30,
-  //     "skus": [
-  //       {
-  //         "id": "1728808512877760515",
-  //         "spuId": 4026178,
-  //         "name": "三国演义",
-  //         "quantity": 2,
-  //         "image": "https://cdn.weread.qq.com/weread/cover/20/yuewen_29855984/t6_yuewen_298559841676969263.jpg",
-  //         "realPay": 118.00,
-  //         "curPrice": 59.00,
-  //         "totalMoney": null,
-  //       }
-  //     ],
-  //     "payChannel": 1,
-  //     "countdown": -1,
-  //     "appraise_text": ""
-  //   }
-  // ]
-  // total.value = res.result.counts //获取页面总数
+  orderList.value=res.result
   total.value = res.result.length //获取页面总数
 }
 onMounted(() => {
@@ -179,9 +124,6 @@ const showAppraise = (row) => {
                 <p v-if="order.orderState === 4">
                   <a href="javascript:;" class="green">评价商品</a>
                 </p>
-                <!--                <p v-if="order.orderState === 5">-->
-                <!--                  <a href="javascript:;" class="green">查看评价</a>-->
-                <!--                </p>-->
               </div>
               <div class="column appraise">
                 <p>

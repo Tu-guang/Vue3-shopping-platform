@@ -17,6 +17,14 @@ export const updateOrderListAPI = (data) => {
     })
 }
 
+export const orderAPI = (data) => {
+    return httpInstance({
+        url: URLS + '/order/add',
+        method: 'POST',
+        data:data
+    })
+}
+
 export const orderDelAPI = (id) => {
     return httpInstance({
         url: URLS + '/order/del/' + id,

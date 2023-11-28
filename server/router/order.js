@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const mongodb = require('../db/mongodb');
 
-router.post('/order/add', async (req, res) => {
+router.post('/order/addAll', async (req, res) => {
     console.log(req.body);
     let x = [
         {
@@ -69,10 +69,62 @@ router.post('/order/add', async (req, res) => {
     })
 });
 
+router.post('/order/add', async (req, res) => {
+    console.log(req.body);
+    const date = new Date();
+    // 获取年份、月份、日期、小时、分钟和秒数的字符串表示
+    const year = date.getFullYear().toString();
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const day = date.getDate().toString().padStart(2, '0');
+    const hours = date.getHours().toString().padStart(2, '0');
+    const minutes = date.getMinutes().toString().padStart(2, '0');
+    const seconds = date.getSeconds().toString().padStart(2, '0');
+
+    // 生成日期和时间字符串
+    const dateTimeString = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+    // 生成一个随机数，并将其转换为字符串形式
+    const randomNumber = Math.floor(Math.random() * Math.pow(10, 16)).toString();
+    // 生成一个时间戳，并将其转换为字符串形式
+    const timestamp = Date.now().toString();
+    // 将两个字符串拼接起来，得到最终的随机字符串
+    const randomString = `${timestamp}${randomNumber}`;
+
+    let x = [
+        {
+            "id": randomString,
+            "user_id": req.body.user_id,
+            "createTime": dateTimeString,
+            "orderState": 2,
+            "postFee": 0,
+            "payMoney": parseFloat(req.body.price),
+            "totalMoney": parseFloat(req.body.price),
+            "skus": [
+                {
+                    "id": randomString,
+                    "spuId": req.body.id,
+                    "name": req.body.name,
+                    "image": req.body.picture,
+                    "realPay": parseFloat(req.body.price),
+                    "curPrice": parseFloat(req.body.price),
+                }
+            ],
+            "payChannel": 1,
+            "countdown": -1,
+            "appraise_text": ""
+    }]
+    var data = await mongodb.insertMany('order', x); // 在这里加上await关键字
+    // console.log(data)
+    res.send({
+        "code": 200,
+        "msg": "操作成功",
+        "result": ""
+    })
+});
+
 router.post('/order/list', async (req, res) => {
     console.log(req.body);
     var data = await mongodb.getData('order', req.body.user_id); // 在这里加上await关键字
-    // console.log(data)
+    console.log(data)
     res.send({
         "code": 200,
         "msg": "操作成功",

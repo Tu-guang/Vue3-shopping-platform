@@ -9,3 +9,11 @@ export const booksListAPI = () => {
     })
 }
 
+export const booksAPI = (data) => {
+    return httpInstance({
+        url: URLS + '/books',
+        method: 'POST',
+        data: data
+    })
+}
+

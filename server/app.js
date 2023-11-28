@@ -63,7 +63,7 @@ app.use((req, res, next) => {
     const url = req._parsedUrl.pathname; // 获取当前访问的api地址
     console.log(url);
     // 不需要进行验证的api，白名单
-    var urlArr = ["/login", "/upload","/register"];
+    var urlArr = ["/login", "/upload","/register","/books/list"];
     if (urlArr.indexOf(url) >= 0) {
         next();
         return false;

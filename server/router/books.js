@@ -12,6 +12,17 @@ router.post('/books/list', async (req, res) => {
     })
 });
 
+router.post('/books', async (req, res) => {
+    console.log(req.body);
+    let temp = await mongodb.query('books', {id: parseInt(req.body.id)}); // 在这里加上await关键字
+    // console.log(data)
+    res.send({
+        "code": 200,
+        "msg": "操作成功",
+        "result": temp
+    })
+});
+
 router.post('/books/addAll', async (req, res) => {
     console.log(req.body);
     let x = [

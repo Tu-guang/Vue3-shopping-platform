@@ -16,4 +16,12 @@ export const favoritesDelAPI = (id) => {
     })
 }
 
+export const favoritesAddAPI = (data) => {
+    return httpInstance({
+        url: URLS + '/favorites/add',
+        method: 'POST',
+        data: data
+    })
+}
+
 

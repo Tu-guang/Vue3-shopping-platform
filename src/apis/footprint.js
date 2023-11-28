@@ -16,4 +16,12 @@ export const footprintDelAPI = (id) => {
     })
 }
 
+export const footprintAddAPI = (data) => {
+    return httpInstance({
+        url: URLS + '/footprint/add' ,
+        method: 'POST',
+        data:data
+    })
+}
+
 

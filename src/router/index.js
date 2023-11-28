@@ -6,13 +6,7 @@ import {createRouter, createWebHistory} from 'vue-router'
 import Layout from '@/views/Layout/index.vue'
 import Login from '@/views/Login/index.vue'
 import Home from '@/views/Home/index.vue'
-import Category from '@/views/Category/index.vue'
-import SubCategory from '@/views/SubCategory/index.vue'
 import Detail from '@/views/Detail/index.vue'
-import CartList from '@/views/CartList/index.vue'
-import Checkout from '@/views/Checkout/index.vue'
-import Pay from '@/views/Pay/index.vue'
-import PayBack from '@/views/Pay/PayBack.vue'
 import Member from '@/views/Member/index.vue'
 import UserInfo from '@/views/Member/components/UserInfo.vue'
 import Address from '@/views/Member/components/Address.vue'
@@ -33,34 +27,8 @@ const router = createRouter({
                     component: Home  //Home页
                 },
                 {
-                    //子路由path前面没有/，使用小写字母
-                    path: 'category/:id',
-                    component: Category  //一级分类
-
-                },
-                {
-                    path: 'category/sub/:id',
-                    component: SubCategory  //二级分类
-                },
-                {
                     path: 'detail/:id',
                     component: Detail  //详情页
-                },
-                {
-                    path: 'cartlist',
-                    component: CartList  //购物车
-                },
-                {
-                    path: 'checkout',
-                    component: Checkout  //订单页
-                },
-                {
-                    path: 'pay',
-                    component: Pay  //支付页
-                },
-                {
-                    path: 'payback',
-                    component: PayBack  //支付结果页
                 },
                 {
                     path: 'member',
