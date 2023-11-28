@@ -43,7 +43,7 @@ const remove_likes = (likes) => {
     <p class="name ellipsis">{{ likes.name }}</p>
     <p class="desc ellipsis">{{ likes.desc }}</p>
     <p class="price">&yen;{{ likes.price }}</p>
-    <p class="time">时间：{{ likes.time }}</p>
+    <p class="time">时间：{{ likes.createtime }}</p>
     <el-button type="primary" @click="remove_likes(likes)">移出收藏夹</el-button>
   </RouterLink>
 </template>

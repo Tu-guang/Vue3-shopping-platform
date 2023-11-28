@@ -103,7 +103,7 @@ const switch_login_or_register = () => {
           <a href="javascript:;">账户注册</a>
         </nav>
         <div class="account-box">
-          <div class="form">
+          <div class="form" >
             <el-form ref="formRef" :model="form" :rules="rules" label-position="right" label-width="60px"
                      status-icon>
               <el-form-item prop="account" label="账户">

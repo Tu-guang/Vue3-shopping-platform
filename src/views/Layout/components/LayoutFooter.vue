@@ -2,10 +2,8 @@
   <footer class="app_footer">
     <div class="extra">
       <div class="container">
-        <div class="slogan">
-        </div>
         <div class="copyright">
-          <p>CopyRight © 小兔鲜儿</p>
+          <p>vue</p>
         </div>
       </div>
     </div>
@@ -123,7 +121,7 @@
   }
 
   .slogan {
-    height: 178px;
+    height: 158px;
     line-height: 58px;
     padding: 60px 100px;
     border-bottom: 1px solid #434343;
@@ -151,7 +149,7 @@
   }
 
   .copyright {
-    height: 170px;
+    height: 100px;
     padding-top: 40px;
     text-align: center;
     color: #999;

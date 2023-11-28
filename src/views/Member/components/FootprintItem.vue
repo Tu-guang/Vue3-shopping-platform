@@ -45,7 +45,7 @@ const remove_goods = (footprint) => {
     <p class="name ellipsis">{{ footprint.name }}</p>
     <p class="desc ellipsis">{{ footprint.desc }}</p>
     <p class="price">&yen;{{ footprint.price }}</p>
-    <p class="time">时间：{{ footprint.time }}</p>
+    <p class="time">时间：{{ footprint.createtime }}</p>
     <el-button type="primary" @click="remove_goods(footprint)">删除足迹</el-button>
   </RouterLink>
 </template>

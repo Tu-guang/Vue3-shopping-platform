@@ -66,6 +66,17 @@ router.post('/favorites/addAll', async (req, res) => {
 });
 
 router.post('/favorites/add', async (req, res) => {
+    const date = new Date();
+    // 获取年份、月份、日期、小时、分钟和秒数的字符串表示
+    const year = date.getFullYear().toString();
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const day = date.getDate().toString().padStart(2, '0');
+    const hours = date.getHours().toString().padStart(2, '0');
+    const minutes = date.getMinutes().toString().padStart(2, '0');
+    const seconds = date.getSeconds().toString().padStart(2, '0');
+    // 生成日期和时间字符串
+    const dateTimeString = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+
     console.log(req.body);
     var newVar = await mongodb.getData('favorites');
     var data1 = await mongodb.query('favorites', {
@@ -73,6 +84,7 @@ router.post('/favorites/add', async (req, res) => {
         name: req.body.name
     });
     req.body.id = newVar.length + 1
+    req.body.createtime = dateTimeString
     if (data1 === null) {
         var data = await mongodb.insertMany('favorites', [req.body]); // 在这里加上await关键字
         // console.log(data)

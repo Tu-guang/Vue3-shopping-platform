@@ -7,7 +7,7 @@
           <el-button class="button" type="primary" @click="addAddress">新增</el-button>
         </div>
         <el-table :data="tableData" style="width: 100%">
-          <el-table-column prop="username" label="收货人" width="80"/>
+          <el-table-column prop="username" label="收货人" width="100"/>
           <el-table-column prop="phone" label="联系电话" width="180"/>
           <el-table-column prop="address" label="地址"/>
           <el-table-column label="操作">

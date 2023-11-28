@@ -14,5 +14,5 @@ onMounted(()=>categoryStore.getCategory())
   <LayoutNav />
   <LayoutHeader />
   <RouterView /> <!--二级路由出口区域-->
-<!--  <LayoutFooter />-->
+  <LayoutFooter />
 </template>

@@ -21,7 +21,7 @@ const params = ref({ //这里设置为响应式数据是为了后面的修改
 let appraise_text = ref('')
 const getOrderList = async () => {
   const res = await orderListAPI()
-  orderList.value=res.result
+  orderList.value = res.result
   total.value = res.result.length //获取页面总数
 }
 onMounted(() => {
@@ -169,7 +169,6 @@ const showAppraise = (row) => {
         v-model="dialogVisible"
         title="我的评价"
         width="30%"
-        :before-close="handleClose"
     >
       <el-input
           v-model="appraise_text"
@@ -180,7 +179,7 @@ const showAppraise = (row) => {
       <template #footer>
       <span class="dialog-footer">
         <el-button @click="dialogVisible = false">取消</el-button>
-        <el-button type="primary" @click="OrderAppraise">
+        <el-button type="primary" @click="OrderAppraise" :disabled="appraise_text!==''">
           确定
         </el-button>
       </span>
