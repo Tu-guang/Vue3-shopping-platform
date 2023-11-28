@@ -1,0 +1,23 @@
+import requests
+import json
+
+# 定义请求数据
+request_data = {
+    "prompt": "Hi, how are you today?",
+    "temperature": 0.8,
+    "max_tokens": 60
+}
+
+# 发起API请求
+response = requests.post(
+    f"https://103.100.209.197/v1/engines/{MODEL_NAME}/completions",
+    headers={
+        "Content-Type": "application/json",
+        "Authorization": f"Bearer {API_KEY}"
+    },
+    data=json.dumps(request_data)
+)
+
+# 解析API响应并输出回答
+response_data = json.loads(response.text)
+answer = response_data["choices"][0]["text"]

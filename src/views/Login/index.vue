@@ -1,38 +1,40 @@
 <script setup>
-import { ref } from 'vue'
+import {ref} from 'vue'
 //elementPlus的提示框
-import { ElMessage } from 'element-plus'
+import {ElMessage} from 'element-plus'
 import 'element-plus/theme-chalk/el-message.css'
 //用来调用router身上的方法
-import { useRouter } from 'vue-router' 
+import {useRouter} from 'vue-router'
 //Pinia
-import { useUserStore } from '@/stores/user'
+import {useUserStore} from '@/stores/user'
+import {registerAPI} from "@/apis/user";
+
 const userStore = useUserStore()
 
 //表单校验
 //1.准备表单对象
 const form = ref({
-  account:'',
-  password:'',
-  agree:true
+  account: '',
+  password: '',
+  agree: true
 })
 //2.准备规则对象
 const rules = {
-  account:[
-    {required:true, message:'用户名不能为空', trigger:'blur'}
+  account: [
+    {required: true, message: '用户名不能为空', trigger: 'blur'}
   ],
-  password:[
-    {required:true, message:'密码不能为空', trigger:'blur'},
-    {min:6, max:14, message:'密码长度为6-14个字符', trigger:'blur'}
+  password: [
+    {required: true, message: '密码不能为空', trigger: 'blur'},
+    {min: 6, max: 14, message: '密码长度为6-14个字符', trigger: 'blur'}
   ],
-  agree:[
+  agree: [
     {
       //自定义校验逻辑。勾选就通过，不勾选就不通过。使用validator方法
-      validator:(rule,value,callback)=>{
+      validator: (rule, value, callback) => {
         //console.log(value) 验证是否勾选
-        if(value){
+        if (value) {
           callback()
-        }else{
+        } else {
           callback(new Error('请勾选协议'))
         }
       }
@@ -42,23 +44,44 @@ const rules = {
 //3.获取form实例做统一验证，使用validate方法
 const formRef = ref(null)
 const router = useRouter()
-const doLogin = ()=>{
-  const {account,password} = form.value
+const doRegister = () => {
+  const {account, password} = form.value
   //调用实例方法，获取表单实例
-  formRef.value.validate(async (valid)=>{
+  formRef.value.validate(async (valid) => {
     //valid:所有表单都通过校验，才为true
     //console.log(valid)
     //此处以valid作为判断条件
-    if(valid){
-      await userStore.getUserInfo({account,password})
-      //1.提示用户
-      ElMessage({type:'success', message:'登录成功'})
-      //2.跳转首页
-      router.replace({path:'/'})
+    if (valid) {
+      let res = await registerAPI({account, password})
+      if (res.code === 200) {
+        //1.提示用户
+        ElMessage({type: 'success', message: '注册成功'})
+        login_or_register.value = !login_or_register.value
+        form.value = {}
+      }
     }
   })
 }
-
+const doLogin = () => {
+  const {account, password} = form.value
+  //调用实例方法，获取表单实例
+  formRef.value.validate(async (valid) => {
+    //valid:所有表单都通过校验，才为true
+    //console.log(valid)
+    //此处以valid作为判断条件
+    if (valid) {
+      await userStore.getUserInfo({account, password})
+      //1.提示用户
+      ElMessage({type: 'success', message: '登录成功'})
+      //2.跳转首页
+      router.replace({path: '/'})
+    }
+  })
+}
+const login_or_register = ref(true)
+const switch_login_or_register = () => {
+  login_or_register.value = !login_or_register.value
+}
 </script>
 
 <template>
@@ -66,7 +89,6 @@ const doLogin = ()=>{
     <header class="login-header">
       <div class="container m-top-20">
         <h1 class="logo">
-          <RouterLink to="/">亚马孙电商购物平台</RouterLink>
         </h1>
         <RouterLink class="entry" to="/">
           进入网站首页
@@ -76,14 +98,14 @@ const doLogin = ()=>{
       </div>
     </header>
     <section class="login-section">
-      <div class="wrapper">
+      <div class="wrapper" v-if="!login_or_register">
         <nav>
-          <a href="javascript:;">账户登录</a>
+          <a href="javascript:;">账户注册</a>
         </nav>
         <div class="account-box">
           <div class="form">
             <el-form ref="formRef" :model="form" :rules="rules" label-position="right" label-width="60px"
-              status-icon>
+                     status-icon>
               <el-form-item prop="account" label="账户">
                 <el-input v-model="form.account" placeholder="demo"/>
               </el-form-item>
@@ -94,6 +116,33 @@ const doLogin = ()=>{
                 <el-checkbox v-model="form.agree" size="large">
                   我已同意隐私条款和服务条款
                 </el-checkbox>
+                <a style="padding: 10px" v-on:click="switch_login_or_register">去登录</a>
+              </el-form-item>
+              <el-button size="large" class="subBtn" @click="doRegister">点击注册</el-button>
+            </el-form>
+          </div>
+        </div>
+      </div>
+
+      <div class="wrapper" v-if="login_or_register">
+        <nav>
+          <a href="javascript:;">账户登录</a>
+        </nav>
+        <div class="account-box">
+          <div class="form">
+            <el-form ref="formRef" :model="form" :rules="rules" label-position="right" label-width="60px"
+                     status-icon>
+              <el-form-item prop="account" label="账户">
+                <el-input v-model="form.account" placeholder="demo"/>
+              </el-form-item>
+              <el-form-item prop="password" label="密码">
+                <el-input v-model="form.password" placeholder="hm#qd@23!"/>
+              </el-form-item>
+              <el-form-item prop="agree" label-width="22px">
+                <el-checkbox v-model="form.agree" size="large">
+                  我已同意隐私条款和服务条款
+                </el-checkbox>
+                <a style="padding: 10px" v-on:click="switch_login_or_register">去注册</a>
               </el-form-item>
               <el-button size="large" class="subBtn" @click="doLogin">点击登录</el-button>
             </el-form>
@@ -101,21 +150,6 @@ const doLogin = ()=>{
         </div>
       </div>
     </section>
-
-    <footer class="login-footer">
-      <div class="container">
-        <p>
-          <a href="javascript:;">关于我们</a>
-          <a href="javascript:;">帮助中心</a>
-          <a href="javascript:;">售后服务</a>
-          <a href="javascript:;">配送与验收</a>
-          <a href="javascript:;">商务合作</a>
-          <a href="javascript:;">搜索推荐</a>
-          <a href="javascript:;">友情链接</a>
-        </p>
-        <p>CopyRight &copy; 亚马孙电商购物平台</p>
-      </div>
-    </footer>
   </div>
 </template>
 
@@ -165,7 +199,7 @@ const doLogin = ()=>{
 }
 
 .login-section {
-  background: url('@/assets/images/login-bg.png') no-repeat center / cover;
+  //background: url('@/assets/images/login-bg.png') no-repeat center / cover;
   height: 488px;
   position: relative;
 
@@ -215,7 +249,7 @@ const doLogin = ()=>{
       color: #999;
       display: inline-block;
 
-      ~a {
+      ~ a {
         border-left: 1px solid #ccc;
       }
     }
@@ -246,7 +280,7 @@ const doLogin = ()=>{
         position: relative;
         height: 36px;
 
-        >i {
+        > i {
           width: 34px;
           height: 34px;
           background: #cfcdcd;
@@ -291,7 +325,7 @@ const doLogin = ()=>{
         }
       }
 
-      >.error {
+      > .error {
         position: absolute;
         font-size: 12px;
         line-height: 28px;

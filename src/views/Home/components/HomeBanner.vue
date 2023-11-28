@@ -8,11 +8,30 @@ const bannerList = ref([])
 //创建自定义函数
 const getBanner = async ()=>{
   //异步运行接口函数，得到接口中的数据
-  const res = await getBannerAPI()
+  // const res = await getBannerAPI()
   //测试是否得到接口中的数据
-  //console.log(res) 
+  //console.log(res)
   //将接口中的数据转化成响应式数据
-  bannerList.value = res.result
+  bannerList.value = [
+    {
+      "id": "17",
+      "imgUrl": "https://m.360buyimg.com/babel/jfs/t1/167779/15/37571/185491/650d3af9Ff6927f2a/61a26aae25fc18c7.png",
+      "hrefUrl": "/category/1019000",
+      "type": "1"
+    },
+    {
+      "id": "18",
+      "imgUrl": "http://m.360buyimg.com/babel/jfs/t1/192330/19/39810/250870/655493e0F60c72e1d/17afd4f4e93c9a4c.jpg",
+      "hrefUrl": "/category/1013001",
+      "type": "1"
+    },
+    {
+      "id": "20",
+      "imgUrl": "http://m.360buyimg.com/babel/jfs/t1/211435/35/37892/117604/65533083F6d524643/a40a914151d76efa.jpg",
+      "hrefUrl": "/category/1005000",
+      "type": "1"
+    }
+  ]
 }
 //在挂载完毕后，运行自定义函数，得到响应式接口数据
 onMounted(() => {
@@ -24,7 +43,7 @@ onMounted(() => {
   <div class="home-banner">
     <el-carousel height="500px">
       <el-carousel-item v-for="item in bannerList" :key="item.id">
-        <img 
+        <img
         :src="item.imgUrl"
         alt="">
       </el-carousel-item>

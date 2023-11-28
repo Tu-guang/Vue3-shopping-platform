@@ -1,29 +1,50 @@
 <script setup>
+import { ref, defineEmits } from 'vue'
 defineProps({
-  goods: {
+  likes: {
     type: Object,
     default: () => {
     }
   }
 })
-import {ElMessage} from 'element-plus'
 
-const open1 = () => {
-  ElMessage({
-    message: 'Congrats, this is a success message.',
-    type: 'success',
-  })
+import {ElMessage,ElMessageBox} from 'element-plus'
+import {favoritesDelAPI} from "@/apis/favorites";
+const emit = defineEmits(['reflush'])
+const remove_likes = (likes) => {
+  ElMessageBox.confirm(
+      '确认删除?',
+      '删除',
+      {
+        confirmButtonText: '确认',
+        cancelButtonText: '取消',
+        type: 'warning',
+      }
+  )
+      .then(() => {
+        favoritesDelAPI(likes.id).then((res) => {
+          if (res.code === 200) {
+            ElMessage({
+              message: '删除足迹成功',
+              type: 'success',
+            })
+            emit('reflush', likes);
+          }
+        })
+      })
+      .catch(() => {
+      })
 }
 </script>
 
 <template>
   <RouterLink class="goods-item" to>
-    <img v-img-lazy="goods.picture" alt=""/>
-    <p class="name ellipsis">{{ goods.name }}</p>
-    <p class="desc ellipsis">{{ goods.desc }}</p>
-    <p class="price">&yen;{{ goods.price }}</p>
-    <p class="time">时间：{{ goods.time }}</p>
-    <el-button type="primary" @click="open1">移出收藏夹</el-button>
+    <img v-img-lazy="likes.picture" alt=""/>
+    <p class="name ellipsis">{{ likes.name }}</p>
+    <p class="desc ellipsis">{{ likes.desc }}</p>
+    <p class="price">&yen;{{ likes.price }}</p>
+    <p class="time">时间：{{ likes.time }}</p>
+    <el-button type="primary" @click="remove_likes(likes)">移出收藏夹</el-button>
   </RouterLink>
 </template>
 

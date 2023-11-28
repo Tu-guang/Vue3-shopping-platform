@@ -1,32 +1,25 @@
-<script lang="ts" setup>
-import {reactive, ref} from 'vue'
-import type {FormInstance, FormRules} from 'element-plus'
+<script setup>
+import {reactive, ref, onMounted, unref} from 'vue'
 import {ElMessage} from 'element-plus'
 import {Plus} from '@element-plus/icons-vue'
 
-interface RuleForm {
-  account: string
-  username: string
-  password: string
-  phone: string
-  avatar: string
-  sex: string
-  mail: string
-}
+const ruleFormRef = ref(null);
+import {userInfoAPI, updateUserInfoAPI} from '@/apis/user';
 
+const loading = ref(false)
 const formSize = ref('default')
-const ruleFormRef = ref<FormInstance>()
-const ruleForm = reactive<RuleForm>({
-  account: '10086',
-  username: '小明',
-  password: '123456',
-  phone: '10086',
-  avatar: 'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg',
-  sex: '男',
-  mail: 'Hello@mail.com'
-})
+let ruleForm = ref({})
 
-const rules = reactive<FormRules<RuleForm>>({
+// account: '10086',
+//     username: '小明',
+//     password: '123456',
+//     phone: '10086',
+//     avatar: 'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg',
+//     sex: '男',
+//     mail: 'Hello@mail.com'
+
+
+const rules = reactive({
   username: [
     {required: true, message: '请输入用户名', trigger: 'blur'},
     {min: 2, max: 5, message: '请输入2到5位的用户名', trigger: 'blur'},
@@ -40,11 +33,25 @@ const rules = reactive<FormRules<RuleForm>>({
   ]
 })
 
-const submitForm = async (formEl: FormInstance | undefined) => {
-  console.log(1)
+const submitForm = async () => {
+  const formEl = unref(ruleFormRef)
   if (!formEl) return
   await formEl.validate((valid, fields) => {
     if (valid) {
+      let upObj = {
+        ...ruleForm.value
+      }
+      delete upObj._id
+      updateUserInfoAPI(upObj).then((res) => {
+        console.log(res)
+        if (res.code === 200) {
+          ElMessage({
+            message: '提交成功',
+            type: 'success',
+          })
+          InitUserInfo()
+        }
+      })
       console.log('提交成功!')
     } else {
       console.log('error submit!', fields)
@@ -52,19 +59,24 @@ const submitForm = async (formEl: FormInstance | undefined) => {
   })
 }
 
-const resetForm = (formEl: FormInstance | undefined) => {
+const resetForm = () => {
+  const formEl = unref(ruleFormRef)
   if (!formEl) return
   formEl.resetFields()
 }
 
-const handleAvatarSuccess: UploadProps['onSuccess'] = (
+const handleAvatarSuccess = (
     response,
     uploadFile
 ) => {
-  imageUrl.value = URL.createObjectURL(uploadFile.raw!)
+  console.log(response)
+  if (response.code === 200) {
+    ruleForm.value.avatar = response.url
+  }
+  // imageUrl.value = URL.createObjectURL(uploadFile.raw!)
 }
 
-const beforeAvatarUpload: UploadProps['beforeUpload'] = (rawFile) => {
+const beforeAvatarUpload = (rawFile) => {
   if (rawFile.type !== 'image/jpeg') {
     ElMessage.error('Avatar picture must be JPG format!')
     return false
@@ -74,10 +86,27 @@ const beforeAvatarUpload: UploadProps['beforeUpload'] = (rawFile) => {
   }
   return true
 }
+
+const InitUserInfo = () => {
+  loading.value = true
+  userInfoAPI().then((res) => {
+    console.log(res)
+    // ruleForm.value = {}
+    if (res.code === 200) {
+      ruleForm.value = {
+        ...res.result
+      }
+    }
+    loading.value = false
+  })
+}
+onMounted(() => {
+  InitUserInfo()
+})
 </script>
 
 <template>
-  <div class="home-overview">
+  <div class="home-overview" v-loading="loading">
     <el-row justify="center">
       <el-col :span="8">
         <div style="margin-top: 10px">个人信息</div>
@@ -116,7 +145,7 @@ const beforeAvatarUpload: UploadProps['beforeUpload'] = (rawFile) => {
                 <el-col>
                   <el-upload
                       class="custom-upload"
-                      action="https://run.mocky.io/v3/9d059bf9-4660-45f2-925d-ce80ad6c4d15"
+                      action="http://localhost:8081/upload"
                       list-type="picture-card"
                       :on-remove="handleRemove"
                       :on-success="handleAvatarSuccess"

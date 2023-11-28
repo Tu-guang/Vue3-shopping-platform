@@ -15,6 +15,7 @@ const httpInstance = axios.create({
 httpInstance.interceptors.request.use(config => {
   //1.从Pinia中获取接口中token数据
   const userStore = useUserStore()
+  console.log(userStore)
   const token = userStore.userInfo.token
   //2.按照后端的要求拼接token数据
   if(token){

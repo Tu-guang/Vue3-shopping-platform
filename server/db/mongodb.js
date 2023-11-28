@@ -36,7 +36,7 @@ const updateMany = async (collectionName, filter, updateFields) => {
         const collection = db.collection(collectionName);
         const result = await collection.updateMany(filter, {$set: updateFields});
         client.close();
-        return result.modifiedCount > 0;
+        return result.acknowledged === true;
     } catch (error) {
         console.error(error);
         return false;
@@ -54,7 +54,7 @@ const deleteMany = async (collectionName) => {
         const collection = db.collection(collectionName);
         const result = await collection.deleteMany();
         client.close();
-        return result.modifiedCount > 0;
+        return result.acknowledged === true;
     } catch (error) {
         console.error(error);
         return false;
@@ -74,7 +74,7 @@ const deleteById = async (collectionName, id) => {
         const collection = db.collection(collectionName);
         const result = await collection.deleteOne({id: id});
         client.close();
-        return result.modifiedCount > 0;
+        return result.acknowledged === true;
     } catch (error) {
         console.error(error);
         return false;
@@ -95,7 +95,7 @@ const updateById = async (collectionName, id, updateData) => {
         const collection = db.collection(collectionName);
         const result = await collection.updateOne({id: id}, {$set: updateData})
         client.close();
-        return result.modifiedCount > 0;
+        return result.acknowledged === true;
     } catch (error) {
         console.error(error);
         return false;
@@ -115,7 +115,8 @@ const insertDocument = async (collectionName, document) => {
         const collection = db.collection(collectionName);
         const result = await collection.insertOne(document);
         client.close();
-        return result.modifiedCount > 0;
+        console.log(result)
+        return result.acknowledged === true;
     } catch (error) {
         console.error(error);
         return false;
@@ -126,12 +127,17 @@ const insertDocument = async (collectionName, document) => {
  * 获取数据集
  * @returns array
  */
-const getData = async (collectionName) => {
+const getData = async (collectionName, user_id) => {
     try {
         await client.connect();
         const db = client.db(dbName);
         const collection = db.collection(collectionName);
-        const array = await collection.find().toArray();
+        let array = []
+        if (user_id !== null) {
+            array = await collection.find({user_id: user_id}).toArray();
+        } else {
+            array = await collection.find().toArray();
+        }
         client.close();
         return array;
     } catch (error) {
@@ -139,6 +145,43 @@ const getData = async (collectionName) => {
         return [];
     }
 };
+
+/**
+ * 获取数据集
+ * @returns array
+ */
+const query = async (collectionName, obj) => {
+    try {
+        await client.connect();
+        const db = client.db(dbName);
+        const collection = db.collection(collectionName);
+        const array = await collection.findOne(obj);
+        client.close();
+        return array;
+    } catch (error) {
+        console.error(error);
+        return {};
+    }
+};
+
+/**
+ * 获取数据集
+ * @returns array
+ */
+const queryData = async (collectionName, id) => {
+    try {
+        await client.connect();
+        const db = client.db(dbName);
+        const collection = db.collection(collectionName);
+        const array = await collection.findOne({id: id});
+        client.close();
+        return array;
+    } catch (error) {
+        console.error(error);
+        return {};
+    }
+};
+
 //把方法暴露出去
 module.exports = {
     insertMany,
@@ -147,5 +190,6 @@ module.exports = {
     deleteById,
     updateById,
     insertDocument,
-    updateMany
+    updateMany,
+    queryData,query
 };

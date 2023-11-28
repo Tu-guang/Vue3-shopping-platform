@@ -17,15 +17,15 @@ export const useUserStore = defineStore('user',()=>{
         const res = await loginAPI({account,password})
         userInfo.value = res.result
         //登录时合并购物车。这里是双异步任务
-        await mergeCartAPI(cartStore.cartList.map(item =>{
-            return{
-                skuId:item.skuId,
-                selected:item.selected,
-                count:item.count
-            }
-        }))
+        // await mergeCartAPI(cartStore.cartList.map(item =>{
+        //     return{
+        //         skuId:item.skuId,
+        //         selected:item.selected,
+        //         count:item.count
+        //     }
+        // }))
         //获取最新购物车列表
-        cartStore.updateNewList()
+        // cartStore.updateNewList()
     }
     //退出登录时，清除用户信息及清空购物车
     const clearUserInfo = ()=>{

@@ -1,37 +1,111 @@
 <script setup>
-import { getUserOrder } from '@/apis/order'
-import { ref,onMounted } from 'vue'
+import {orderListAPI, updateOrderListAPI} from '@/apis/myorder'
+import {ref, onMounted} from 'vue'
+import {ElMessageBox, ElMessage} from 'element-plus'
+
+const dialogVisible = ref(false)
+
 
 // tab列表
 const tabTypes = [
-  { name: "all", label: "全部" }
+  {name: "all", label: "全部"}
 ]
 // 获取订单列表
 const orderList = ref([])
 const total = ref(0) //页面总数
 const params = ref({ //这里设置为响应式数据是为了后面的修改
-  orderState:0,
-  page:1,
-  pageSize:2
+  orderState: 0,
+  page: 1,
+  pageSize: 2
 })
-const getOrderList = async ()=>{
-  const res = await getUserOrder(params.value)  //传递参数
-  orderList.value = res.result.items
-  total.value = res.result.counts //获取页面总数
+let appraise_text = ref('')
+const getOrderList = async () => {
+  const res = await orderListAPI()
+  orderList.value = res.result
+  // orderList.value = [
+  //   {
+  //     "id": "1729012423043584002",
+  //     "createTime": "2023-11-27 13:41:00",
+  //     "payType": 1,
+  //     "orderState": 2,
+  //     "payLatestTime": "2023-11-27 14:11:00",
+  //     "postFee": 0.00,
+  //     "payMoney": 29.90,
+  //     "totalMoney": 29.90,
+  //     "totalNum": 1,
+  //     "skus": [
+  //       {
+  //         "id": "1729012423047778306",
+  //         "spuId": 4026450,
+  //         "name": "三体",
+  //         "quantity": 1,
+  //         "image": "https://cdn.weread.qq.com/weread/cover/80/yuewen_695233/t6_yuewen_6952331677562148.jpg",
+  //         "realPay": 29.90,
+  //         "curPrice": 29.90,
+  //         "totalMoney": null,
+  //       }
+  //     ],
+  //     "payChannel": 1,
+  //     "countdown": -1,
+  //     "appraise_text": "评价1"
+  //   },
+  //   {
+  //     "id": "1728808512831623170",
+  //     "createTime": "2023-11-27 00:10:44",
+  //     "payType": 1,
+  //     "orderState": 1,
+  //     "payLatestTime": "2023-11-27 00:40:44",
+  //     "postFee": 9.00,
+  //     "payMoney": 59.00,
+  //     "totalMoney": 50.00,
+  //     "totalNum": 30,
+  //     "skus": [
+  //       {
+  //         "id": "1728808512877760515",
+  //         "spuId": 4026178,
+  //         "name": "三国演义",
+  //         "quantity": 2,
+  //         "image": "https://cdn.weread.qq.com/weread/cover/20/yuewen_29855984/t6_yuewen_298559841676969263.jpg",
+  //         "realPay": 118.00,
+  //         "curPrice": 59.00,
+  //         "totalMoney": null,
+  //       }
+  //     ],
+  //     "payChannel": 1,
+  //     "countdown": -1,
+  //     "appraise_text": ""
+  //   }
+  // ]
+  // total.value = res.result.counts //获取页面总数
+  total.value = 205 //获取页面总数
 }
 onMounted(() => {
   getOrderList()
 })
 
+const OrderAppraise = () => {
+  dialogVisible.value = false
+  form.value.appraise_text = appraise_text.value
+  updateOrderListAPI(form.value).then((res) => {
+    if (res.code === 200) {
+      ElMessage({
+        message: '评价成功',
+        type: 'success',
+      })
+      getOrderList()
+    }
+  })
+}
+
 //tab切换
-const tabChange = (type)=>{
+const tabChange = (type) => {
   //console.log(type) //验证控制台输出被点击项（被激活状态）的下标值
   params.value.orderState = type //将orderState修改为当前的状态
   getOrderList() //重新发送请求，获取当前状态下的订单列表
 }
 
 //页数切换
-const pageChange = (page)=>{
+const pageChange = (page) => {
   //console.log(page) //验证控制台输出被点击项的页数
   params.value.page = page //修改当前的页数
   getOrderList() //重新发送请求，获取当前页数下的订单列表
@@ -49,17 +123,25 @@ const fomartPayState = (payState) => {
   }
   return stateMap[payState] //使用中括号的写法取对象中的属性
 }
+const form = ref({})
+const showAppraise = (row) => {
+  form.value = {
+    ...row
+  }
+  delete form.value._id
+  dialogVisible.value = true
+  appraise_text.value = row.appraise_text
+}
 </script>
 
 <template>
   <div class="order-container">
     <el-tabs @tab-change="tabChange">
       <!-- tab切换 -->
-      <el-tab-pane v-for="item in tabTypes" :key="item.name" :label="item.label" />
-
+      <el-tab-pane v-for="item in tabTypes" :key="item.name" :label="item.label"/>
       <div class="main-container">
         <div class="holder-container" v-if="orderList.length === 0">
-          <el-empty description="暂无订单数据" />
+          <el-empty description="暂无订单数据"/>
         </div>
         <div v-else>
           <!-- 订单列表 -->
@@ -70,7 +152,7 @@ const fomartPayState = (payState) => {
               <!-- 未付款，倒计时时间还有 -->
               <span class="down-time" v-if="order.orderState === 1">
                 <i class="iconfont icon-down-time"></i>
-                <b>付款截止: {{order.countdown}}</b>
+                <b>付款截止: {{ order.countdown }}</b>
               </span>
             </div>
             <div class="body">
@@ -78,18 +160,14 @@ const fomartPayState = (payState) => {
                 <ul>
                   <li v-for="item in order.skus" :key="item.id">
                     <a class="image" href="javascript:;">
-                      <img :src="item.image" alt="" />
+                      <img :src="item.image" alt=""/>
                     </a>
                     <div class="info">
                       <p class="name ellipsis-2">
                         {{ item.name }}
                       </p>
-                      <p class="attr ellipsis">
-                        <span>{{ item.attrsText }}</span>
-                      </p>
                     </div>
                     <div class="price">¥{{ item.realPay?.toFixed(2) }}</div>
-                    <div class="count">x{{ item.quantity }}</div>
                   </li>
                 </ul>
               </div>
@@ -101,8 +179,15 @@ const fomartPayState = (payState) => {
                 <p v-if="order.orderState === 4">
                   <a href="javascript:;" class="green">评价商品</a>
                 </p>
-                <p v-if="order.orderState === 5">
-                  <a href="javascript:;" class="green">查看评价</a>
+                <!--                <p v-if="order.orderState === 5">-->
+                <!--                  <a href="javascript:;" class="green">查看评价</a>-->
+                <!--                </p>-->
+              </div>
+              <div class="column appraise">
+                <p>
+                  <el-button type="success" @click="showAppraise(order)">
+                    {{ order.appraise_text != "" ? '查看评价' : '评价' }}
+                  </el-button>
                 </p>
               </div>
               <div class="column amount">
@@ -111,8 +196,8 @@ const fomartPayState = (payState) => {
                 <p>在线支付</p>
               </div>
               <div class="column action">
-                <el-button  v-if="order.orderState === 1" type="primary"
-                  size="small">
+                <el-button v-if="order.orderState === 1" type="primary"
+                           size="small">
                   立即付款
                 </el-button>
                 <el-button v-if="order.orderState === 3" type="primary" size="small">
@@ -131,12 +216,34 @@ const fomartPayState = (payState) => {
           </div>
           <!-- 分页 -->
           <div class="pagination-container">
-            <el-pagination :total="total" @current-change="pageChange" :page-size="params.pageSize" background layout="prev, pager, next" />
+            <el-pagination :total="total" @current-change="pageChange" :page-size="params.pageSize" background
+                           layout="prev, pager, next"/>
           </div>
         </div>
       </div>
-
     </el-tabs>
+
+    <el-dialog
+        v-model="dialogVisible"
+        title="我的评价"
+        width="30%"
+        :before-close="handleClose"
+    >
+      <el-input
+          v-model="appraise_text"
+          :rows="2"
+          type="textarea"
+          placeholder="请输入评价"
+      />
+      <template #footer>
+      <span class="dialog-footer">
+        <el-button @click="dialogVisible = false">取消</el-button>
+        <el-button type="primary" @click="OrderAppraise">
+          确定
+        </el-button>
+      </span>
+      </template>
+    </el-dialog>
   </div>
 
 </template>
@@ -208,7 +315,7 @@ const fomartPayState = (payState) => {
       text-align: center;
       padding: 20px;
 
-      >p {
+      > p {
         padding-top: 10px;
       }
 
