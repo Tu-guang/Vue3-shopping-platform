@@ -1,12 +1,16 @@
 <script setup>
 import {onMounted, ref} from 'vue'
 import {booksAPI} from '@/apis/books'
-import {useRoute} from 'vue-router'
+import {useRoute, useRouter} from 'vue-router'
 import {footprintAddAPI} from "@/apis/footprint";
 import {favoritesAddAPI} from "@/apis/favorites"; //获取路由参数
 const route = useRoute()
 import {ElMessage} from 'element-plus'
 import {orderAPI} from "@/apis/myorder";
+import {useUserStore} from "@/stores/user";
+
+const router = useRouter()
+const userStore = useUserStore()
 //获取基础数据
 const goods = ref({}) //接口中result是一个对象
 const getGoods = async () => {
@@ -15,7 +19,13 @@ const getGoods = async () => {
   delete goods.value._id
   var newVar = await footprintAddAPI(goods.value);
 }
-onMounted(() => getGoods())
+onMounted(() => {
+      getGoods()
+      if (!userStore.userInfo.token) {
+        router.push({path: '/login'})
+      }
+    }
+)
 
 //sku规格被操作时
 let skuObj = {}

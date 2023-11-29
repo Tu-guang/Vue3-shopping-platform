@@ -143,6 +143,12 @@ router.post('/order/del/:id', async (req, res) => {
             "msg": "操作成功",
             "result": ""
         })
+    }else {
+        res.send({
+            "code": 200,
+            "msg": "操作成功",
+            "result": ""
+        })
     }
 });
 
@@ -151,6 +157,12 @@ router.post('/order/update', async (req, res) => {
     var data = await mongodb.updateById('order', req.body.id, req.body); // 在这里加上await关键字
     if (data === true) {
         console.log(data)
+        res.send({
+            "code": 200,
+            "msg": "操作成功",
+            "result": ""
+        })
+    }else {
         res.send({
             "code": 200,
             "msg": "操作成功",

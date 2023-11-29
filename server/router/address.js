@@ -65,6 +65,12 @@ router.post('/address/del/:id', async (req, res) => {
             "msg": "操作成功",
             "result": ""
         })
+    }else {
+        res.send({
+            "code": 200,
+            "msg": "操作成功",
+            "result": ""
+        })
     }
 });
 
@@ -73,6 +79,12 @@ router.post('/address/update', async (req, res) => {
     var data = await mongodb.updateById('address', req.body.id, req.body); // 在这里加上await关键字
     if (data === true) {
         console.log(data)
+        res.send({
+            "code": 200,
+            "msg": "操作成功",
+            "result": ""
+        })
+    }else {
         res.send({
             "code": 200,
             "msg": "操作成功",
@@ -100,6 +112,12 @@ router.post('/address/add', async (req, res) => {
             "msg": "操作成功",
             "result": ""
         })
+    }else {
+        res.send({
+            "code": 200,
+            "msg": "操作成功",
+            "result": ""
+        })
     }
 });
 
@@ -116,6 +134,12 @@ router.post('/address/set_default/:id', async (req, res) => {
     await mongodb.updateMany('address', {user_id: req.body.user_id}, {is_default: 0}); // 在这里加上await关键字
     var data2 = await mongodb.updateById('address', parseInt(id), {is_default: 1}); // 在这里加上await关键字
     if (data2 === true) {
+        res.send({
+            "code": 200,
+            "msg": "操作成功",
+            "result": ""
+        })
+    }else {
         res.send({
             "code": 200,
             "msg": "操作成功",

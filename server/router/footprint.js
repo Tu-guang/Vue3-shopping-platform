@@ -128,6 +128,12 @@ router.post('/footprint/del/:id', async (req, res) => {
             "msg": "操作成功",
             "result": ""
         })
+    }else {
+        res.send({
+            "code": 200,
+            "msg": "操作成功",
+            "result": ""
+        })
     }
 });
 

@@ -30,6 +30,12 @@ router.post("/user/info/update", async (req, res) => {
             "msg": "操作成功",
             "result": ""
         })
+    }else {
+        res.send({
+            "code": 200,
+            "msg": "操作成功",
+            "result": ""
+        })
     }
 })
 

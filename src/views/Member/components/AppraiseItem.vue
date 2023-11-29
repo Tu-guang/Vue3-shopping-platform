@@ -157,10 +157,10 @@ const showAppraise = (row) => {
             </div>
           </div>
           <!-- 分页 -->
-          <div class="pagination-container">
-            <el-pagination :total="total" @current-change="pageChange" :page-size="params.pageSize" background
-                           layout="prev, pager, next"/>
-          </div>
+<!--          <div class="pagination-container">-->
+<!--            <el-pagination :total="total" @current-change="pageChange" :page-size="params.pageSize" background-->
+<!--                           layout="prev, pager, next"/>-->
+<!--          </div>-->
         </div>
       </div>
     </el-tabs>
@@ -200,6 +200,9 @@ const showAppraise = (row) => {
 
   .main-container {
     min-height: 500px;
+    height: 700px;
+    overflow-x: auto;
+    overflow-y: auto;
 
     .holder-container {
       min-height: 500px;

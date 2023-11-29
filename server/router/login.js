@@ -17,7 +17,7 @@ router.post('/login', async (req, res) => {
         })
     } else {
         res.send({
-            code: 200,
+            code: 500,
             msg: "账号或密码错误",
             result: ""
         })

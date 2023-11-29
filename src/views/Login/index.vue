@@ -1,5 +1,5 @@
 <script setup>
-import {ref} from 'vue'
+import {reactive, ref, onMounted} from 'vue'
 //elementPlus的提示框
 import {ElMessage} from 'element-plus'
 import 'element-plus/theme-chalk/el-message.css'
@@ -58,6 +58,9 @@ const doRegister = () => {
         ElMessage({type: 'success', message: '注册成功'})
         login_or_register.value = !login_or_register.value
         form.value = {}
+        activeName.value = "first"
+      } else {
+        ElMessage({type: 'error', message: res.msg})
       }
     }
   })
@@ -67,21 +70,49 @@ const doLogin = () => {
   //调用实例方法，获取表单实例
   formRef.value.validate(async (valid) => {
     //valid:所有表单都通过校验，才为true
-    //console.log(valid)
+    // console.log(valid)
     //此处以valid作为判断条件
     if (valid) {
       await userStore.getUserInfo({account, password})
-      //1.提示用户
-      ElMessage({type: 'success', message: '登录成功'})
-      //2.跳转首页
-      router.replace({path: '/'})
+      console.log()
+      if (userStore.userInfo.token) {
+        //1.提示用户
+        ElMessage({type: 'success', message: '登录成功'})
+        //2.跳转首页
+        router.replace({path: '/'})
+      } else {
+        ElMessage({type: 'error', message: '账号或密码错误'})
+      }
     }
   })
 }
 const login_or_register = ref(true)
 const switch_login_or_register = () => {
   login_or_register.value = !login_or_register.value
+  activeName.value = "first"
 }
+const activeName = ref('first')
+const btnText = ref("发送验证码")
+const disabled = ref(false)
+
+const time = ref(60)
+const countDown = ref(60)
+const sendCode = () => {
+  let timer = setInterval(() => {
+    time.value--;
+    btnText.value = `${time.value}s后重新发送`
+    disabled.value = true
+    if (time.value === 0) {
+      disabled.value = false;
+      btnText.value = '重新发送';
+      time.value = countDown.value
+      clearInterval(timer)
+    }
+  }, 1000)
+}
+onMounted(() => {
+  time.value = countDown.value
+})
 </script>
 
 <template>
@@ -99,55 +130,120 @@ const switch_login_or_register = () => {
     </header>
     <section class="login-section">
       <div class="wrapper" v-if="!login_or_register">
-        <nav>
-          <a href="javascript:;">账户注册</a>
-        </nav>
-        <div class="account-box">
-          <div class="form" >
-            <el-form ref="formRef" :model="form" :rules="rules" label-position="right" label-width="60px"
-                     status-icon>
-              <el-form-item prop="account" label="账户">
-                <el-input v-model="form.account" placeholder="demo"/>
-              </el-form-item>
-              <el-form-item prop="password" label="密码">
-                <el-input v-model="form.password" placeholder="hm#qd@23!"/>
-              </el-form-item>
-              <el-form-item prop="agree" label-width="22px">
-                <el-checkbox v-model="form.agree" size="large">
-                  我已同意隐私条款和服务条款
-                </el-checkbox>
-                <a style="padding: 10px" v-on:click="switch_login_or_register">去登录</a>
-              </el-form-item>
-              <el-button size="large" class="subBtn" @click="doRegister">点击注册</el-button>
-            </el-form>
-          </div>
-        </div>
+        <el-tabs v-model="activeName" class="demo-tabs" @tab-click="handleClick" style="padding: 20px">
+          <el-tab-pane label="账户注册" name="first">
+            <div class="account-box">
+              <div class="form" style="margin-top: 30px">
+                <el-form ref="formRef" :model="form" :rules="rules" label-position="right"
+                         status-icon>
+                  <el-form-item prop="account">
+                    <el-input v-model="form.account" placeholder="账户"/>
+                  </el-form-item>
+                  <el-form-item prop="password">
+                    <el-input v-model="form.password" placeholder="密码"/>
+                  </el-form-item>
+                  <el-form-item prop="agree" label-width="22px">
+                    <el-checkbox v-model="form.agree" size="large">
+                      我已同意隐私条款和服务条款
+                    </el-checkbox>
+                    <a style="padding: 10px" v-on:click="switch_login_or_register">去登录</a>
+                  </el-form-item>
+                  <el-button size="large" class="subBtn" @click="doRegister">点击注册</el-button>
+                </el-form>
+              </div>
+            </div>
+          </el-tab-pane>
+          <el-tab-pane label="短信注册" name="second">
+            <div class="account-box">
+              <div class="form" style="margin-top: 30px">
+                <el-form ref="formRef" :model="form" :rules="rules" label-position="right"
+                         status-icon>
+                  <el-form-item prop="phone">
+                    <el-input placeholder="请输入手机号" v-model="form.phone">
+                    </el-input>
+                  </el-form-item>
+                  <el-form-item prop="code">
+                    <el-row :gutter="20">
+                      <el-col :span="16">
+                        <el-input placeholder="请输入验证码" v-model="form.code">
+                        </el-input>
+                      </el-col>
+                      <el-col :span="5">
+                        <el-button @click="sendCode" :disabled="disabled">{{ btnText }}</el-button>
+                      </el-col>
+                    </el-row>
+                  </el-form-item>
+                  <el-form-item prop="agree" label-width="22px">
+                    <el-checkbox v-model="form.agree" size="large">
+                      我已同意隐私条款和服务条款
+                    </el-checkbox>
+                    <a style="padding: 10px" v-on:click="switch_login_or_register">去注册</a>
+                  </el-form-item>
+                  <el-button size="large" class="subBtn">点击登录</el-button>
+                </el-form>
+              </div>
+            </div>
+          </el-tab-pane>
+        </el-tabs>
       </div>
 
       <div class="wrapper" v-if="login_or_register">
-        <nav>
-          <a href="javascript:;">账户登录</a>
-        </nav>
-        <div class="account-box">
-          <div class="form">
-            <el-form ref="formRef" :model="form" :rules="rules" label-position="right" label-width="60px"
-                     status-icon>
-              <el-form-item prop="account" label="账户">
-                <el-input v-model="form.account" placeholder="demo"/>
-              </el-form-item>
-              <el-form-item prop="password" label="密码">
-                <el-input v-model="form.password" placeholder="hm#qd@23!"/>
-              </el-form-item>
-              <el-form-item prop="agree" label-width="22px">
-                <el-checkbox v-model="form.agree" size="large">
-                  我已同意隐私条款和服务条款
-                </el-checkbox>
-                <a style="padding: 10px" v-on:click="switch_login_or_register">去注册</a>
-              </el-form-item>
-              <el-button size="large" class="subBtn" @click="doLogin">点击登录</el-button>
-            </el-form>
-          </div>
-        </div>
+        <el-tabs v-model="activeName" class="demo-tabs" @tab-click="handleClick" style="padding: 20px">
+          <el-tab-pane label="账户登录" name="first">
+            <div class="account-box">
+              <div class="form" style="margin-top: 30px">
+                <el-form ref="formRef" :model="form" :rules="rules" label-position="right"
+                         status-icon>
+                  <el-form-item prop="account">
+                    <el-input v-model="form.account" placeholder="账户">
+                    </el-input>
+                  </el-form-item>
+                  <el-form-item prop="password">
+                    <el-input v-model="form.password" placeholder="密码"/>
+                  </el-form-item>
+                  <el-form-item prop="agree" label-width="22px">
+                    <el-checkbox v-model="form.agree" size="large">
+                      我已同意隐私条款和服务条款
+                    </el-checkbox>
+                    <a style="padding: 10px" v-on:click="switch_login_or_register">去注册</a>
+                  </el-form-item>
+                  <el-button size="large" class="subBtn" @click="doLogin">点击登录</el-button>
+                </el-form>
+              </div>
+            </div>
+          </el-tab-pane>
+          <el-tab-pane label="短信登录" name="second">
+            <div class="account-box">
+              <div class="form" style="margin-top: 30px">
+                <el-form ref="formRef" :model="form" :rules="rules" label-position="right"
+                         status-icon>
+                  <el-form-item prop="phone">
+                    <el-input placeholder="请输入手机号" v-model="form.phone">
+                    </el-input>
+                  </el-form-item>
+                  <el-form-item prop="code">
+                    <el-row :gutter="20">
+                      <el-col :span="16">
+                        <el-input placeholder="请输入验证码" v-model="form.code">
+                        </el-input>
+                      </el-col>
+                      <el-col :span="5">
+                        <el-button @click="sendCode" :disabled="disabled">{{ btnText }}</el-button>
+                      </el-col>
+                    </el-row>
+                  </el-form-item>
+                  <el-form-item prop="agree" label-width="22px">
+                    <el-checkbox v-model="form.agree" size="large">
+                      我已同意隐私条款和服务条款
+                    </el-checkbox>
+                    <a style="padding: 10px" v-on:click="switch_login_or_register">去注册</a>
+                  </el-form-item>
+                  <el-button size="large" class="subBtn">点击登录</el-button>
+                </el-form>
+              </div>
+            </div>
+          </el-tab-pane>
+        </el-tabs>
       </div>
     </section>
   </div>
@@ -204,7 +300,7 @@ const switch_login_or_register = () => {
   position: relative;
 
   .wrapper {
-    width: 380px;
+    width: 400px;
     background: #fff;
     position: absolute;
     left: 50%;
