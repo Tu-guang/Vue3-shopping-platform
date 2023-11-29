@@ -1,6 +1,5 @@
 <script setup>
 //导入封装好的接口函数
-import { getBannerAPI } from '@/apis/home';
 import { ref,onMounted } from 'vue';
 
 //创建响应式空数组
@@ -8,9 +7,6 @@ const bannerList = ref([])
 //创建自定义函数
 const getBanner = async ()=>{
   //异步运行接口函数，得到接口中的数据
-  // const res = await getBannerAPI()
-  //测试是否得到接口中的数据
-  //console.log(res)
   //将接口中的数据转化成响应式数据
   bannerList.value = [
     {

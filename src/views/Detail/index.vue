@@ -99,7 +99,6 @@ const Order = () => {
                 <span>{{ goods.price }}</span>
               </p>
               <!-- sku组件 -->
-              <XtxSku :goods="goods" @change="skuChange"/>
               <!-- 数据组件 -->
               <el-input-number v-model="count" @change="countChange"/>
               <!-- 按钮组件 -->

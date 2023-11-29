@@ -1,5 +1,5 @@
 <script setup>
-import {orderListAPI, updateOrderListAPI} from '@/apis/myorder'
+import {orderDelAPI, orderListAPI, updateOrderListAPI} from '@/apis/myorder'
 import {ref, onMounted} from 'vue'
 import {ElMessageBox, ElMessage} from 'element-plus'
 
@@ -77,6 +77,30 @@ const showAppraise = (row) => {
   dialogVisible.value = true
   appraise_text.value = row.appraise_text
 }
+const delOrder = (order) => {
+  ElMessageBox.confirm(
+      '确认删除?',
+      '删除',
+      {
+        confirmButtonText: '确认',
+        cancelButtonText: '取消',
+        type: 'warning',
+      }
+  )
+      .then(() => {
+        orderDelAPI(order.id).then((res) => {
+          if (res.code === 200) {
+            ElMessage({
+              message: '删除成功',
+              type: 'success',
+            })
+            getOrderList()
+          }
+        })
+      })
+      .catch(() => {
+      })
+}
 </script>
 
 <template>
@@ -147,7 +171,10 @@ const showAppraise = (row) => {
                 </el-button>
                 <p><a href="javascript:;">查看详情</a></p>
                 <p v-if="[2, 3, 4, 5].includes(order.orderState)">
-                  <a href="javascript:;">再次购买</a>
+                  <a href="javascript:">再次购买</a>
+                </p>
+                <p v-if="[2, 3, 4, 5].includes(order.orderState)">
+                  <a @click="delOrder(order)">删除订单</a>
                 </p>
                 <p v-if="[4, 5].includes(order.orderState)">
                   <a href="javascript:;">申请售后</a>
@@ -157,10 +184,10 @@ const showAppraise = (row) => {
             </div>
           </div>
           <!-- 分页 -->
-<!--          <div class="pagination-container">-->
-<!--            <el-pagination :total="total" @current-change="pageChange" :page-size="params.pageSize" background-->
-<!--                           layout="prev, pager, next"/>-->
-<!--          </div>-->
+          <!--          <div class="pagination-container">-->
+          <!--            <el-pagination :total="total" @current-change="pageChange" :page-size="params.pageSize" background-->
+          <!--                           layout="prev, pager, next"/>-->
+          <!--          </div>-->
         </div>
       </div>
     </el-tabs>

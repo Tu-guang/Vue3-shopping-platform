@@ -135,7 +135,7 @@ router.post('/order/list', async (req, res) => {
 router.post('/order/del/:id', async (req, res) => {
     console.log(req.body);
     const id = req.params.id;
-    var data = await mongodb.deleteById('order', parseInt(id)); // 在这里加上await关键字
+    var data = await mongodb.deleteById('order', id); // 在这里加上await关键字
     if (data === true) {
         console.log(data)
         res.send({

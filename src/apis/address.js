@@ -1,7 +1,7 @@
 //封装的接口函数
 import httpInstance from "@/utils/http";
 
-const URLS = 'http://localhost:8081'
+const URLS = import.meta.env.VITE_BASE_URL
 export const addressListAPI = () => {
     return httpInstance({
         url: URLS + '/address/list',
